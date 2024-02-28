@@ -2,8 +2,9 @@
 #define __ReleEsp32_H__
 
 #include <Arduino.h>
+#include "../WifiEsp32/WifiEsp32.h"
 
-class ReleEsp32
+class ReleEsp32 : public WifiEsp32
 {
 private:
     int pin;
@@ -20,6 +21,8 @@ public:
     void setState(bool state);
     bool getPreviousStatus();
     void setPreviousStatus(bool previousStatus);
+    void releOn();
+    void releOff();
 };
 
 #endif

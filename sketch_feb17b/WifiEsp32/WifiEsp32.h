@@ -2,7 +2,9 @@
 #define __WifiEsp32_H__
 
 #include <Arduino.h>
-#include <WiFi.h> // Usa el pin 15, no se puede usar para otra cosa
+// Usa el pin 15, no se puede usar para otra cosa
+#include <WiFi.h>
+#include <WebServer.h>
 #include <HTTPClient.h>
 #include <Arduino_JSON.h>
 #include "time.h"
@@ -16,10 +18,13 @@ private:
     const char *ntpServer = "pool.ntp.org";
     const long gmtOffset_sec = 0;
     const int daylightOffset_sec = 3600;
+    String apiEndpoint;
 
 public:
+    WebServer server;
     WifiEsp32();
     //~ReleEsp32();
+    void listenClient();
     void init();
     void getPassengers();
     void insertCountry();

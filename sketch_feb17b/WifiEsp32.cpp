@@ -1,13 +1,15 @@
 #include "WifiEsp32/WifiEsp32.h"
 
-WifiEsp32::WifiEsp32()
-{
+WifiEsp32::WifiEsp32() : server(80) {
+    apiEndpoint = "http://192.168.1.105:3000";
 }
+
 
 // WifiEsp32::~WifiEsp32() {}
 
 void WifiEsp32::init()
 {
+    WiFi.mode(WIFI_STA);
     WiFi.begin(ssid, password);
     while (WiFi.status() != WL_CONNECTED)
     {
@@ -15,13 +17,20 @@ void WifiEsp32::init()
         Serial.println("Conectando a WiFi...");
     }
     Serial.println("Conectado a la red WiFi");
+    Serial.print("Dirección IP: ");
+    Serial.println(WiFi.localIP());
+    server.begin();
 
     configTime(gmtOffset_sec, daylightOffset_sec, ntpServer);
+}
+void WifiEsp32::listenClient()
+{
+    server.handleClient();
 }
 
 void WifiEsp32::insertCountry()
 {
-    httpClient.begin("http://192.168.1.106:3000/setCountry");
+    httpClient.begin(apiEndpoint + "/setCountry");
 
     String postData = "{\"pais_nombre\": \"Canada\"}";
 
@@ -53,14 +62,14 @@ String WifiEsp32::getTime()
 
     char timeStringBuff[50];
     strftime(timeStringBuff, sizeof(timeStringBuff), "%A, %B %d %Y %H:%M:%S", &timeinfo);
-    String timeStr = String(timeStringBuff); 
+    String timeStr = String(timeStringBuff);
     return timeStr;
 }
 */
 
 void WifiEsp32::sendNotification(String gmail, String affair, String message)
 {
-    httpClient.begin("http://192.168.1.106:3000/sendEmail");
+    httpClient.begin(apiEndpoint + "/sendEmail");
 
     String postData = "{";
     postData += "\"destinatarios\": \"" + gmail + "\", ";
@@ -86,7 +95,7 @@ void WifiEsp32::sendNotification(String gmail, String affair, String message)
 }
 void WifiEsp32::getPassengers()
 {
-    httpClient.begin("http://192.168.1.106:3000/getPassengers");
+    httpClient.begin(apiEndpoint + "/getPassengers");
 
     int httpCode = httpClient.GET();
 
