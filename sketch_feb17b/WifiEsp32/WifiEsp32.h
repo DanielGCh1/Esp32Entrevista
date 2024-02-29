@@ -21,10 +21,9 @@ private:
     String apiEndpoint;
 
 public:
-    WebServer server;
     WifiEsp32();
     //~ReleEsp32();
-    void listenClient();
+    void listenClient(WebServer &ser);
     void init();
     void getPassengers();
     void insertCountry();

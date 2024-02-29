@@ -8,11 +8,11 @@
 #include "CurrentSensorEsp32/CurrentSensorEsp32.h"
 #include "LedEsp32/LedEsp32.h"
 
-//WebServer server(80);
+WebServer ser(80);
 WifiEsp32 wifiEsp32;
 
 #define GpioRele 13
-ReleEsp32 rele(GpioRele, false);
+ReleEsp32 rele(GpioRele, false, ser);
 
 
 
@@ -50,7 +50,7 @@ void loop()
   digitalWrite(2, HIGH);
   delay(1000);*/
 
-  wifiEsp32.listenClient();
+  wifiEsp32.listenClient(ser);
   if (buttonFan.getWasPressured())
   {
     Serial.println("Boton precionado");

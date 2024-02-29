@@ -1,6 +1,6 @@
 #include "WifiEsp32/WifiEsp32.h"
 
-WifiEsp32::WifiEsp32() : server(80) {
+WifiEsp32::WifiEsp32() {
     apiEndpoint = "http://192.168.1.105:3000";
 }
 
@@ -19,13 +19,12 @@ void WifiEsp32::init()
     Serial.println("Conectado a la red WiFi");
     Serial.print("Dirección IP: ");
     Serial.println(WiFi.localIP());
-    server.begin();
 
     configTime(gmtOffset_sec, daylightOffset_sec, ntpServer);
 }
-void WifiEsp32::listenClient()
+void WifiEsp32::listenClient(WebServer &ser)
 {
-    server.handleClient();
+    ser.handleClient();
 }
 
 void WifiEsp32::insertCountry()

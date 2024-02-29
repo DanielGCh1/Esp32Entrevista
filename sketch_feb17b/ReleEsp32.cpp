@@ -12,14 +12,24 @@ void ReleEsp32::off()
     sendNotification("dgchaarturo@gmail.com", "Ventilador apagado", "Consumo= 0W");
 }
 
-ReleEsp32::ReleEsp32(int pin, bool state) {
+ReleEsp32::ReleEsp32(int pin, bool state, WebServer &ser) : server(&ser)
+{
     this->pin = pin;
     this->state = state;
     this->previousStatus = state;
 }
 
-
 // ReleEsp32::~ReleEsp32() {}
+void ReleEsp32::handle_NotFound()
+{
+    server->send(404, "text/plain", "La página no existe");
+}
+
+void ReleEsp32::handle_OnConnect()
+{
+    Serial.println("Inicio");
+    server->send(200, "text/plain", "Conexión establecida");
+}
 
 void ReleEsp32::init(bool state)
 {
@@ -32,20 +42,30 @@ void ReleEsp32::init(bool state)
     {
         off();
     }
-    server.on("/releOn", [this]() { releOn(); });
-    server.on("/releOff", [this]() { releOff(); });
+
+    // Configuración de rutas HTTP utilizando std::bind
+    server->on("/", [this]()
+               { this->handle_OnConnect(); });
+
+    server->on("/releOn", std::bind(&ReleEsp32::releOn, this));
+    server->on("/releOff", std::bind(&ReleEsp32::releOff, this));
+    server->onNotFound(std::bind(&ReleEsp32::handle_OnConnect, this));
+
+    server->begin();
 }
 
 void ReleEsp32::releOn()
 {
     setState(true);
-    server.send(200, "text/html", "Rele On");
+    Serial.println("Rele On");
+    server->send(200, "text/html", "Rele On");
 }
 
 void ReleEsp32::releOff()
 {
     setState(false);
-    server.send(200, "text/html", "Rele OFF");
+    Serial.println("Rele OFF");
+    server->send(200, "text/html", "Rele OFF");
 }
 bool ReleEsp32::getState()
 {
